@@ -376,7 +376,7 @@ function calcOf(wb){
   const pkg = g("v_package");
   return {risk, total, pkg, multiple: (pkg > 0 && total > 0) ? total / pkg : 0};
 }
-function multipleText(c){ return c.multiple ? `${c.multiple >= 10 ? Math.round(c.multiple) : c.multiple.toFixed(1)}× the cost of hiring me` : ""; }
+function multipleText(c){ return c.multiple >= 0.1 ? `${c.multiple >= 10 ? Math.round(c.multiple) : c.multiple.toFixed(1)}× the cost of hiring me` : ""; }
 function xyzSentence(wb){
   const x = ansOf(wb,"v_x"), y = ansOf(wb,"v_y"), z = ansOf(wb,"v_z");
   if(!x && !y && !z) return "";
