@@ -191,9 +191,9 @@ const LENSES = ["Revenue", "Costs", "Risk"];
 
 const DETAILS = [
   {key:"solve_company", label:"Target company", type:"text", placeholder:"Company name"},
-  {key:"solve_decision_maker", label:"Key decision maker", type:"text", placeholder:"Name and title"},
+  {key:"solve_decision_maker", label:"Decision maker", type:"text", placeholder:"Name and title"},
   {key:"solve_sector", label:"Sector", type:"text", placeholder:"For example, specialty insurance"},
-  {key:"solve_role", label:"Role you would create", type:"text", placeholder:"Role or function"},
+  {key:"solve_role", label:"Role you create", type:"text", placeholder:"Role or function"},
   {key:"solve_date", label:"Date started", type:"date", placeholder:""}
 ];
 
@@ -381,7 +381,8 @@ function xyzSentence(wb){
   const x = ansOf(wb,"v_x"), y = ansOf(wb,"v_y"), z = ansOf(wb,"v_z");
   if(!x && !y && !z) return "";
   const strip = s => s.replace(/[.\s]+$/,"");
-  return `I ${strip(x) || "…"} for ${strip(y) || "…"}, and the benefit to them is ${strip(z) || "…"}.`;
+  const xs = strip(x).replace(/^(I\s+)+/i,"");
+  return `I ${xs || "…"} for ${strip(y) || "…"}, and the benefit to them is ${strip(z) || "…"}.`;
 }
 function chosen(sectionId, wb){
   const s = sections.find(x=>x.id===sectionId);
@@ -477,7 +478,7 @@ function renderIntro(){
     <p class="subtitle">The executive methodology for uncovering commercial opportunities and creating a role before it exists.</p>
     <p class="tagline">Don't just apply for job opportunities. Create them.</p>
     <div class="lens">
-      <p>Roles only really exist for one of three reasons, and ideally all three:</p>
+      <p>Job roles only exist for one of three reasons:</p>
       <p><strong>Revenue:</strong> to protect it, cross-sell, upsell or find new revenue.</p>
       <p><strong>Costs:</strong> to reduce the transaction cost of doing business.</p>
       <p><strong>Risk:</strong> to mitigate it.</p>
@@ -580,7 +581,7 @@ function blockHTML(b){
     }
     case "xyz":
       return `<div class="q">${qHead(b)}
-        <div class="sub"><label for="f-v_x">X: what I do</label>${txt("v_x","For example, turn around underperforming client portfolios")}</div>
+        <div class="sub"><label for="f-v_x">X: what I do (start with a verb)</label>${txt("v_x","For example, turn around underperforming client portfolios")}</div>
         <div class="sub"><label for="f-v_y">Y: for whom (the decision maker and their business)</label>${txt("v_y","For example, the COO of a mid-sized insurer losing share to digital competitors")}</div>
         <div class="sub"><label for="f-v_z">Z: the benefit to them</label>${txt("v_z","For example, £4m of revenue protected in year one")}</div>
         <div class="sentence"><p class="st">Your sentence</p><p id="xyz-out"></p></div></div>`;
@@ -659,6 +660,10 @@ function renderSection(idx){
   root.querySelectorAll("[data-key]").forEach(el=>{
     const ev = el.tagName==="SELECT" ? "change" : "input";
     el.addEventListener(ev, ()=>{ setAns(el.dataset.key, el.value); save(); refreshLive(); });
+  });
+  // Open the calendar on the first click or tap (some browsers only open it from the small icon).
+  root.querySelectorAll('input[type="date"]').forEach(el=>{
+    el.addEventListener("click", ()=>{ try{ if(el.showPicker) el.showPicker(); }catch(e){} });
   });
   root.querySelectorAll("[data-tag]").forEach(btn=>{
     btn.onclick = ()=>{
